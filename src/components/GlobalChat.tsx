@@ -143,21 +143,29 @@ export default function GlobalChat({
 
           {/* Chat Input Field Form */}
           <div className="p-4 bg-slate-900/60 border-t border-white/5">
-            <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto flex items-center space-x-3">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Ask a question or refine the dashboard list (e.g., 'show only offbeat places')..."
-                className="flex-1 bg-white/5 border border-white/10 rounded-full px-5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/40"
-              />
-              <button
-                type="submit"
-                disabled={isGenerating || !inputText.trim()}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-full transition-all disabled:opacity-40"
-              >
-                <Send className="w-3.5 h-3.5" />
-              </button>
+            <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto flex flex-col space-y-1.5">
+              <div className="flex items-center space-x-3">
+                <div className="flex-1 relative flex items-center">
+                  <input
+                    type="text"
+                    value={inputText}
+                    maxLength={500}
+                    onChange={(e) => setInputText(e.target.value)}
+                    placeholder="Ask a question or refine the dashboard list (e.g., 'show only offbeat places')..."
+                    className="w-full bg-white/5 border border-white/10 rounded-full pl-5 pr-14 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/40"
+                  />
+                  <span className="absolute right-4 text-[9px] text-slate-500 font-medium">
+                    {inputText.length}/500
+                  </span>
+                </div>
+                <button
+                  type="submit"
+                  disabled={isGenerating || !inputText.trim()}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-full transition-all disabled:opacity-40"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </form>
           </div>
         </div>

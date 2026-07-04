@@ -165,19 +165,24 @@ export default function DestinationDetail({
                   </p>
                 </div>
 
-                <form onSubmit={handleSubmitRefine} className="relative z-20 mt-6">
-                  <div className="text-xs text-slate-400 mb-1.5 font-medium">Refine this tab's content:</div>
+                <form onSubmit={handleSubmitRefine} className="relative z-20 mt-6 space-y-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-slate-400 font-medium">Refine this tab's content:</span>
+                    <span className="text-[9px] text-slate-500 font-medium">{refineInput.length}/250</span>
+                  </div>
                   <div className="relative">
                     <input
                       type="text"
                       value={refineInput}
+                      maxLength={250}
                       onChange={(e) => setRefineInput(e.target.value)}
                       placeholder="e.g. More historical details..."
                       className="w-full bg-white/5 border border-white/15 rounded-xl py-2 pl-3 pr-10 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/50"
                     />
                     <button
                       type="submit"
-                      className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-indigo-400 hover:text-white"
+                      disabled={!refineInput.trim()}
+                      className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-indigo-400 hover:text-white disabled:opacity-45"
                     >
                       <Send className="w-3.5 h-3.5" />
                     </button>

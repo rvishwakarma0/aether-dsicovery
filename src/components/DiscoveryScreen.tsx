@@ -54,27 +54,36 @@ export default function DiscoveryScreen({
         </div>
 
         <form onSubmit={handleSearchSubmit} className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="e.g. hilly areas, into food and quiet trekking, budget trip..."
-              className="w-full pl-11 pr-24 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 font-sans focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm shadow-xs"
-            />
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-sans font-medium text-xs transition-colors flex items-center gap-1.5 shadow-sm disabled:opacity-50"
-            >
-              {isLoading ? (
-                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <Sparkles className="w-3.5 h-3.5" />
-              )}
-              Discover
-            </button>
+          <div className="space-y-1">
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <input
+                type="text"
+                value={query}
+                maxLength={250}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="e.g. hilly areas, into food and quiet trekking, budget trip..."
+                className="w-full pl-11 pr-24 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 placeholder-slate-400 font-sans focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm shadow-xs"
+              />
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-sans font-medium text-xs transition-colors flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5" />
+                )}
+                Discover
+              </button>
+            </div>
+            <div className="flex justify-between items-center text-[10px] px-1 text-slate-400">
+              <span>Limit: 250 characters max</span>
+              <span className={query.length >= 240 ? "text-amber-600 font-semibold animate-pulse" : ""}>
+                {query.length} / 250
+              </span>
+            </div>
           </div>
 
           {/* Quick-select chips categories */}
