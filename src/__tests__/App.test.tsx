@@ -13,6 +13,12 @@ vi.mock('../components/DiscoveryScreen', () => ({
         Search
       </button>
       <button
+        data-testid="trigger-search-month"
+        onClick={() => props.onSearch('trip in October', ['October'])}
+      >
+        Search with Month
+      </button>
+      <button
         data-testid="select-dest"
         onClick={() =>
           props.onSelectDestination({
@@ -252,4 +258,167 @@ describe('App', () => {
     fireEvent.click(within(appRoot).getByTestId('change-tab'));
     expect(within(appRoot).getByTestId('active-tab').textContent).toBe('heritage');
   });
+
+  it('sets travelMonth when a month chip is included in search', async () => {
+    const mockDestinations = [
+      { name: 'Manali', hook: 'Great trekking', tag: 'Popular' },
+    ];
+
+    (global.fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ destinations: mockDestinations }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ content: 'test', suggestions: [] }),
+      });
+
+    const { container } = render(<App />);
+    const appRoot = container.querySelector('#app-root')!;
+
+    // The mock DiscoveryScreen passes ['Manali'] — we need a month chip.
+    // Instead, trigger onSearch directly via a button that sends a month chip.
+    // We'll use the trigger-search-month button added to our mock.
+    fireEvent.click(within(appRoot).getByTestId('trigger-search-month'));
+
+    await waitFor(() => {
+      expect(within(appRoot).getByTestId('dest-count').textContent).toBe('1');
+    });
+
+    // Verify the discover API was called with the month chip
+    expect(global.fetch).toHaveBeenCalledWith('/api/discover', expect.objectContaining({
+      method: 'POST',
+      body: expect.stringContaining('October'),
+    }));
+  });
+
+  it('fetches tab content when activeTab changes and destination is selected', async () => {
+    // First discover destinations to get a selected destination
+    const mockDestinations = [
+      { name: 'Manali', hook: 'Great trekking', tag: 'Popular' },
+    ];
+
+    (global.fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ destinations: mockDestinations }),
+      })
+      // Initial tab content fetch for 'stories' (triggered by selectedDestination effect)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ content: 'stories content', suggestions: [] }),
+      })
+      // Tab content fetch for 'heritage' (triggered by activeTab effect)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ content: 'heritage content', suggestions: [] }),
+      });
+
+    const { container } = render(<App />);
+    const appRoot = container.querySelector('#app-root')!;
+
+    fireEvent.click(within(appRoot).getByTestId('trigger-search'));
+
+    await waitFor(() => {
+      expect(within(appRoot).getByTestId('dest-count').textContent).toBe('1');
+    });
+
+    // Now change the tab — this should trigger fetchTabContent for heritage
+    fireEvent.click(within(appRoot).getByTestId('change-tab'));
+
+    await waitFor(() => {
+      // Verify that /api/destination-details was called for the heritage tab
+      const detailCalls = (global.fetch as ReturnType<typeof vi.fn>).mock.calls.filter(
+        (call: any[]) => call[0] === '/api/destination-details'
+      );
+      expect(detailCalls.length).toBeGreaterThanOrEqual(2);
+      const lastDetailCall = detailCalls[detailCalls.length - 1];
+      const body = JSON.parse(lastDetailCall[1].body);
+      expect(body.tab).toBe('heritage');
+    });
+  });
+
+  it('handles fetchTabContent API failure gracefully', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const mockDestinations = [
+      { name: 'Manali', hook: 'Great trekking', tag: 'Popular' },
+    ];
+
+    (global.fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ destinations: mockDestinations }),
+      })
+      // Tab content fetch fails
+      .mockResolvedValueOnce({
+        ok: false,
+      });
+
+    const { container } = render(<App />);
+    const appRoot = container.querySelector('#app-root')!;
+
+    fireEvent.click(within(appRoot).getByTestId('trigger-search'));
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalled();
+    });
+
+    // Detail loading should be set back to false after error
+    await waitFor(() => {
+      expect(within(appRoot).getByTestId('detail-loading').textContent).toBe('false');
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  it('calls handleRefineTabContent which triggers fetchTabContent with refinement', async () => {
+    const mockDestinations = [
+      { name: 'Manali', hook: 'Great trekking', tag: 'Popular' },
+    ];
+
+    (global.fetch as ReturnType<typeof vi.fn>)
+      // Discover call
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ destinations: mockDestinations }),
+      })
+      // Initial tab content fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ content: 'stories content', suggestions: [] }),
+      })
+      // Refinement tab content fetch
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ content: 'refined content', suggestions: ['more'] }),
+      });
+
+    const { container } = render(<App />);
+    const appRoot = container.querySelector('#app-root')!;
+
+    // First, discover and select a destination
+    fireEvent.click(within(appRoot).getByTestId('trigger-search'));
+
+    await waitFor(() => {
+      expect(within(appRoot).getByTestId('dest-name').textContent).toBe('Manali');
+    });
+
+    // Now click the refine button — this calls handleRefineTabContent
+    fireEvent.click(within(appRoot).getByTestId('refine-tab'));
+
+    await waitFor(() => {
+      const detailCalls = (global.fetch as ReturnType<typeof vi.fn>).mock.calls.filter(
+        (call: any[]) => call[0] === '/api/destination-details'
+      );
+      // Should have at least 2 calls: initial + refinement
+      expect(detailCalls.length).toBeGreaterThanOrEqual(2);
+      const lastCall = detailCalls[detailCalls.length - 1];
+      const body = JSON.parse(lastCall[1].body);
+      expect(body.followUp).toBe('more history');
+      expect(body.destinationName).toBe('Manali');
+    });
+  });
 });
+
