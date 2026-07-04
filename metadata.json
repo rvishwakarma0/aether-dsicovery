@@ -1,0 +1,6 @@
+{
+  "name": "Destination Discovery",
+  "description": "Conversational, GenAI-powered travel discovery app providing personalized destination recommendations, cultural deep-dives, and a persistent AI travel assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
