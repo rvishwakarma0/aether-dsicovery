@@ -45,16 +45,19 @@ export default function GlobalChat({
       }`}
     >
       {/* Header Bar */}
-      <div
+      <button
         id="chat-header-bar"
         onClick={() => setIsOpen(!isOpen)}
-        className="h-14 flex items-center justify-between px-6 cursor-pointer select-none border-b border-white/5 hover:bg-white/5 transition-colors"
+        aria-expanded={isOpen}
+        aria-controls="global-chat-messaging-area"
+        aria-label={isOpen ? "Collapse AI Travel Assistant" : "Expand AI Travel Assistant"}
+        className="w-full h-14 flex items-center justify-between px-6 select-none border-b border-white/5 hover:bg-white/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 text-left"
       >
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse absolute -top-0.5 -right-0.5" />
+            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse absolute -top-0.5 -right-0.5" aria-hidden="true" />
             <div className="p-1.5 bg-indigo-500/20 text-indigo-300 rounded-lg">
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-4 h-4" aria-hidden="true" />
             </div>
           </div>
           <div>
@@ -75,7 +78,7 @@ export default function GlobalChat({
 
         <div className="flex items-center space-x-4">
           {/* Context Tag Indicators */}
-          <div className="hidden md:flex items-center space-x-2 text-[10px]">
+          <div className="hidden md:flex items-center space-x-2 text-[10px]" aria-hidden="true">
             <span className="px-2 py-0.5 bg-white/5 rounded-full border border-white/10 text-slate-400 flex items-center gap-1">
               <Check className="w-2.5 h-2.5 text-indigo-400" /> Auto-Contextual
             </span>
@@ -84,20 +87,20 @@ export default function GlobalChat({
             </span>
           </div>
 
-          <button className="text-slate-400 hover:text-white transition-colors">
+          <span className="text-slate-400 hover:text-white transition-colors" aria-hidden="true">
             {isOpen ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
-          </button>
+          </span>
         </div>
-      </div>
+      </button>
 
       {/* Expanded Messaging Area */}
       {isOpen && (
-        <div className="flex flex-col h-[304px]">
+        <div id="global-chat-messaging-area" className="flex flex-col h-[304px]">
           {/* Message List */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div role="log" aria-live="polite" className="flex-1 overflow-y-auto p-6 space-y-4">
             {chatHistory.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center py-6">
-                <Sparkles className="w-8 h-8 text-indigo-400 mb-2 animate-pulse" />
+                <Sparkles className="w-8 h-8 text-indigo-400 mb-2 animate-pulse" aria-hidden="true" />
                 <p className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
                   Persistent Travel Companion
                 </p>
@@ -118,6 +121,9 @@ export default function GlobalChat({
                         : 'bg-white/5 border-white/10 text-slate-200'
                     }`}
                   >
+                    <span className="sr-only">
+                      {msg.role === 'user' ? 'You said: ' : 'Assistant said: '}
+                    </span>
                     {msg.role === 'model' ? (
                       <article className="markdown-body text-slate-200">
                         <ReactMarkdown>{msg.text}</ReactMarkdown>
@@ -132,8 +138,8 @@ export default function GlobalChat({
 
             {isGenerating && (
               <div className="flex justify-start">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 text-xs text-slate-400 flex items-center gap-2">
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+                <div role="status" className="bg-white/5 border border-white/10 rounded-2xl p-3.5 text-xs text-slate-400 flex items-center gap-2">
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-indigo-400" aria-hidden="true" />
                   Generating responses &amp; syncing layout...
                 </div>
               </div>
@@ -146,24 +152,28 @@ export default function GlobalChat({
             <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto flex flex-col space-y-1.5">
               <div className="flex items-center space-x-3">
                 <div className="flex-1 relative flex items-center">
+                  <label htmlFor="global-chat-input" className="sr-only">Message travel assistant</label>
                   <input
+                    id="global-chat-input"
                     type="text"
                     value={inputText}
                     maxLength={500}
                     onChange={(e) => setInputText(e.target.value)}
                     placeholder="Ask a question or refine the dashboard list (e.g., 'show only offbeat places')..."
+                    aria-label="Message travel assistant"
                     className="w-full bg-white/5 border border-white/10 rounded-full pl-5 pr-14 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/40"
                   />
-                  <span className="absolute right-4 text-[9px] text-slate-500 font-medium">
+                  <span className="absolute right-4 text-[9px] text-slate-500 font-medium" aria-hidden="true">
                     {inputText.length}/500
                   </span>
                 </div>
                 <button
                   type="submit"
                   disabled={isGenerating || !inputText.trim()}
+                  aria-label="Send message"
                   className="bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-full transition-all disabled:opacity-40"
                 >
-                  <Send className="w-3.5 h-3.5" />
+                  <Send className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
               </div>
             </form>

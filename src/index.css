@@ -25,12 +25,12 @@
   background: rgba(156, 163, 175, 0.45);
 }
 
-/* Custom styles for rendered Markdown in detailed tabs */
+/* Custom styles for rendered Markdown in detailed tabs (adjusted for dark container contrast) */
 .markdown-body h1 {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #f8fafc;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
 }
@@ -39,7 +39,7 @@
   font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 600;
-  color: #374151;
+  color: #f1f5f9;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
@@ -48,13 +48,13 @@
   font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 600;
-  color: #4b5563;
+  color: #e2e8f0;
   margin-top: 0.75rem;
   margin-bottom: 0.25rem;
 }
 
 .markdown-body p {
-  color: #4b5563;
+  color: #cbd5e1;
   line-height: 1.625;
   margin-bottom: 1rem;
   font-size: 0.95rem;
@@ -67,23 +67,46 @@
 }
 
 .markdown-body li {
-  color: #4b5563;
+  color: #cbd5e1;
   margin-bottom: 0.375rem;
   font-size: 0.95rem;
 }
 
 .markdown-body blockquote {
-  border-left: 4px solid #6366f1;
-  background-color: #f5f3ff;
+  border-left: 4px solid #818cf8;
+  background-color: rgba(99, 102, 241, 0.1);
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   border-radius: 0.375rem;
   font-style: italic;
-  color: #5b21b6;
+  color: #c7d2fe;
 }
 
 .markdown-body strong {
   font-weight: 600;
-  color: #111827;
+  color: #ffffff;
+}
+
+/* Accessibility utility for screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 

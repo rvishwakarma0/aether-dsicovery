@@ -31,9 +31,9 @@ export default function App() {
   // Travel month context (extracted from search or query to personalize dynamic events)
   const [travelMonth, setTravelMonth] = useState<string>('October');
 
-  // Trigger default suggestions on initial load
+  // Do not trigger suggestions on initial load; wait for user input or search trigger
   useEffect(() => {
-    handleDiscoverSuggestions('', []);
+    // Initial loading is idle until the user submits their first query or selects chips.
   }, []);
 
   // Whenever selected destination changes, reset the tab contents and fetch content for the active tab
@@ -191,6 +191,14 @@ export default function App() {
         backgroundColor: '#0f172a',
       }}
     >
+      {/* Skip to main content link for keyboard navigation */}
+      <a
+        href="#main-content-layout"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+      >
+        Skip to content
+      </a>
+
       {/* Background visual light orbs */}
       <div
         id="bg-orbs"
@@ -208,7 +216,7 @@ export default function App() {
       >
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-            <Compass className="w-5 h-5 text-white animate-spin-slow" />
+            <Compass className="w-5 h-5 text-white animate-spin-slow" aria-hidden="true" />
           </div>
           <h1 className="text-xl font-bold tracking-tight text-white font-display">
             AETHER <span className="font-light text-indigo-300">DISCOVERY</span>
@@ -219,7 +227,7 @@ export default function App() {
             GenAI-Powered Cultural Travel App
           </div>
           <div className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-slate-300 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
             Live Preview
           </div>
         </div>
