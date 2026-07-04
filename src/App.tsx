@@ -19,6 +19,9 @@ export default function App() {
     local_events: null,
   });
 
+  // Destination-specific tab content cache to prevent redundant API calls
+  const [cache, setCache] = useState<Record<string, Record<TabType, TabContent | null>>>({});
+
   // Chat message history
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   
@@ -36,27 +39,31 @@ export default function App() {
     // Initial loading is idle until the user submits their first query or selects chips.
   }, []);
 
-  // Whenever selected destination changes, reset the tab contents and fetch content for the active tab
+  // Load tab content when destination or active tab changes, utilizing the cache
   useEffect(() => {
-    if (selectedDestination) {
-      // Clear current cached tabs
+    if (!selectedDestination) return;
+    const destName = selectedDestination.name;
+    const cachedDest = cache[destName];
+
+    if (cachedDest) {
+      // Restore cached tab contents for this destination
+      setTabContents(cachedDest);
+      // Fetch if this specific tab hasn't been loaded yet
+      if (!cachedDest[activeTab]) {
+        fetchTabContent(destName, activeTab);
+      }
+    } else {
+      // Reset tabContents state for the new destination
       setTabContents({
         stories: null,
         heritage: null,
         hidden_gems: null,
         local_events: null,
       });
-      // Load current active tab content
-      fetchTabContent(selectedDestination.name, activeTab);
+      // Trigger new fetch
+      fetchTabContent(destName, activeTab);
     }
-  }, [selectedDestination]);
-
-  // When active tab changes, load that tab's content if not already loaded
-  useEffect(() => {
-    if (selectedDestination && !tabContents[activeTab]) {
-      fetchTabContent(selectedDestination.name, activeTab);
-    }
-  }, [activeTab]);
+  }, [selectedDestination, activeTab]);
 
   // Call Discovery API endpoint
   const handleDiscoverSuggestions = async (query: string, chips: string[]) => {
@@ -83,10 +90,8 @@ export default function App() {
       const data = await response.json();
       if (data.destinations && data.destinations.length > 0) {
         setDestinations(data.destinations);
-        // Pre-select the first suggestion if none is selected
-        if (!selectedDestination) {
-          setSelectedDestination(data.destinations[0]);
-        }
+        // Unconditionally auto-select the first suggestion on search/discovery
+        setSelectedDestination(data.destinations[0]);
       }
     } catch (err: any) {
       setDiscoverError(err.message || 'Something went wrong while fetching recommendations.');
@@ -116,13 +121,32 @@ export default function App() {
       }
 
       const data = await response.json();
+      const updatedTabContent = {
+        content: data.content,
+        suggestions: data.suggestions || []
+      };
+
       setTabContents(prev => ({
         ...prev,
-        [tab]: {
-          content: data.content,
-          suggestions: data.suggestions || []
-        }
+        [tab]: updatedTabContent
       }));
+
+      // Store in destination-specific cache
+      setCache(prev => {
+        const destCache = prev[destName] || {
+          stories: null,
+          heritage: null,
+          hidden_gems: null,
+          local_events: null,
+        };
+        return {
+          ...prev,
+          [destName]: {
+            ...destCache,
+            [tab]: updatedTabContent
+          }
+        };
+      });
     } catch (err) {
       console.error(err);
     } finally {

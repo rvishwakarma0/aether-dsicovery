@@ -94,7 +94,7 @@ describe('App', () => {
 
   it('renders the app with header and all child components', () => {
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     expect(within(appRoot).getByText('AETHER')).toBeInTheDocument();
     expect(within(appRoot).getByText('DISCOVERY')).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe('App', () => {
 
   it('renders the skip-to-content accessibility link', () => {
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
     const link = appRoot.querySelector('a[href="#main-content-layout"]');
     expect(link).toBeTruthy();
     expect(link?.textContent).toContain('Skip to content');
@@ -113,7 +113,7 @@ describe('App', () => {
 
   it('starts with no destinations and stories tab active', () => {
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     expect(within(appRoot).getByTestId('dest-count').textContent).toBe('0');
     expect(within(appRoot).getByTestId('active-tab').textContent).toBe('stories');
@@ -138,7 +138,7 @@ describe('App', () => {
       });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     fireEvent.click(within(appRoot).getByTestId('trigger-search'));
 
@@ -157,7 +157,7 @@ describe('App', () => {
     });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     fireEvent.click(within(appRoot).getByTestId('trigger-search'));
 
@@ -176,7 +176,7 @@ describe('App', () => {
     });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     fireEvent.click(within(appRoot).getByTestId('send-chat'));
 
@@ -192,7 +192,7 @@ describe('App', () => {
     });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     fireEvent.click(within(appRoot).getByTestId('send-chat'));
 
@@ -217,7 +217,7 @@ describe('App', () => {
       });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     fireEvent.click(within(appRoot).getByTestId('trigger-search'));
 
@@ -253,7 +253,7 @@ describe('App', () => {
 
   it('changes active tab when setActiveTab is called', () => {
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     fireEvent.click(within(appRoot).getByTestId('change-tab'));
     expect(within(appRoot).getByTestId('active-tab').textContent).toBe('heritage');
@@ -275,7 +275,7 @@ describe('App', () => {
       });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     // The mock DiscoveryScreen passes ['Manali'] — we need a month chip.
     // Instead, trigger onSearch directly via a button that sends a month chip.
@@ -316,7 +316,7 @@ describe('App', () => {
       });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     fireEvent.click(within(appRoot).getByTestId('trigger-search'));
 
@@ -357,7 +357,7 @@ describe('App', () => {
       });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     fireEvent.click(within(appRoot).getByTestId('trigger-search'));
 
@@ -396,7 +396,7 @@ describe('App', () => {
       });
 
     const { container } = render(<App />);
-    const appRoot = container.querySelector('#app-root')!;
+    const appRoot = container.querySelector('#app-root')! as HTMLElement;
 
     // First, discover and select a destination
     fireEvent.click(within(appRoot).getByTestId('trigger-search'));
